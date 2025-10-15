@@ -1,5 +1,7 @@
 ### YOUR IMPORTS HERE ###
 import pandas as pd
+import plotly.express as px
+import plotly.graph_objects as go
 
 def query_climate(df: pd.DataFrame, country: str, year_begin: int, year_end: int, month: int) -> pd.DataFrame:
     # filter by year_begin and year_end
@@ -8,7 +10,7 @@ def query_climate(df: pd.DataFrame, country: str, year_begin: int, year_end: int
     # filter by country
     df = df.loc[df['Country'] == country]
     
-    # remove unecessary columns
+    # remove unecessary columns, i now realize there is a better way to do this haha
     for i in range(1, 13):
         if i != month:
             df = df.drop("VALUE"+str(i), axis='columns')
@@ -39,5 +41,27 @@ def get_mean_temp(df: pd.DataFrame, country: str, year_begin: int, year_end: int
     
     return df
 
-# def temperature_plot(df: pd.DataFrame, country: str, year_begin: int, year_end: int, month: int) -> go.Figure:
-#     return NotImplemented
+def temperature_plot(df: pd.DataFrame, country: str, year_begin: int, year_end: int, month: int) -> go.Figure:
+
+    stations = get_mean_temp(df, country, year_begin, year_end, month)
+
+    fig = px.scatter_map(stations,
+                        title="test",
+                        lat="LATITUDE", 
+                        lon="LONGITUDE",
+                        color="Mean_Temp",
+                        hover_name="NAME",
+                        hover_data="Mean_Temp",
+                        map_style="open-street-map",
+                        zoom=4)
+    fig.update_layout(margin={"r": 0,"t": 0,"l": 0,"b": 0})
+    
+    return fig
+
+
+
+
+
+
+
+

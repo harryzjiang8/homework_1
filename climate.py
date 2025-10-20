@@ -27,25 +27,24 @@ def query_climate(df: pd.DataFrame, country: str, year_begin: int, year_end: int
     return df
 
 def get_mean_temp(df: pd.DataFrame, country: str, year_begin: int, year_end: int, month: int) -> pd.DataFrame:
-
+    
     # format dataframe same way I have in previous function
     df = query_climate(df, country, year_begin, year_end, month)
-    # get list of all names of stations
-    names = df["NAME"].unique()
-    # add new column
-    df['Mean_Temp'] = 0.0
-    # for each station, calculate the mean and set as the Mean_Temp
-    for name in names:
-        df.loc[df['NAME'] == name, 'Mean_Temp']= df.loc[df['NAME'] == name, 'Temp'].agg('mean')
-    df['Mean_Temp'] = df['Mean_Temp'].round(2)
-    
+
+    # group each by each station name and calculate the mean
+    mean_temps = df.groupby(['NAME', 'LATITUDE', 'LONGITUDE'])['Temp'].agg('mean').round(2)
+    # merge the mean temps back into the main dataframe
+    df = df.merge(mean_temps, on=['NAME', 'LATITUDE', 'LONGITUDE'])    
+
+    # rename the columns
+    df = df.rename(columns={'Temp_x': 'Temp', 'Temp_y': 'Mean_Temp'})
     return df
 
 def temperature_plot(df: pd.DataFrame, country: str, year_begin: int, year_end: int, month: int) -> go.Figure:
 
     stations = get_mean_temp(df, country, year_begin, year_end, month)
 
-    fig = px.scatter_map(stations,
+    fig = px.scatter_mapbox(stations,
                         title="test",
                         lat="LATITUDE", 
                         lon="LONGITUDE",

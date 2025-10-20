@@ -33,7 +33,25 @@ def player_stat(df: pd.DataFrame, player: str, season: str, stat: str) -> pd.Dat
     return df
 
 def leader(df: pd.DataFrame, season: str) -> pd.DataFrame:
-    return NotImplemented
+
+    # get only stats from the given season
+    df = df[df["year"] == season]
+    # create a new empty data frame to input rows into
+    df_leader = pd.DataFrame(columns=['PLAYER', 'TEAM', 'stat', 'value'])
+    # df_leader['year'] == season
+
+    # use to index the rows
+    i = 0
+    # loop for each stat we need to find the max of
+    for col in COLS[3:]:
+        # find the row with the highest value for the given stat
+        row = df[col].idxmax()
+        df_leader.loc[i] = [df.loc[row, 'PLAYER'], df.loc[row, 'TEAM'], col, df[col].max()]
+        i = i+1
+
+    df_leader.insert(0, 'year', season)
+    
+    return df_leader
 
 
 

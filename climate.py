@@ -45,15 +45,17 @@ def temperature_plot(df: pd.DataFrame, country: str, year_begin: int, year_end: 
     stations = get_mean_temp(df, country, year_begin, year_end, month)
 
     fig = px.scatter_mapbox(stations,
-                        title="test",
+                        title=f"Average temperature at each station during {year_begin} to {year_end} in Month {month}",
                         lat="LATITUDE", 
                         lon="LONGITUDE",
                         color="Mean_Temp",
                         hover_name="NAME",
                         hover_data="Mean_Temp",
-                        map_style="open-street-map",
+                        mapbox_style="open-street-map",
+                        height=300,
+                        width=700,
                         zoom=4)
-    fig.update_layout(margin={"r": 0,"t": 0,"l": 0,"b": 0})
+    fig.update_layout(margin={"r": 0,"t": 40,"l": 0,"b": 0})
     
     return fig
 
